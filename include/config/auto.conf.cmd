@@ -295,7 +295,6 @@ deps_config := \
 	drivers/gpu/yagl/Kconfig \
 	drivers/gpu/fgles/Kconfig \
 	drivers/gpu/stub/Kconfig \
-	drivers/gpu/drm/vigs/Kconfig \
 	drivers/gpu/drm/udl/Kconfig \
 	drivers/gpu/drm/gma500/Kconfig \
 	drivers/gpu/drm/vmwgfx/Kconfig \

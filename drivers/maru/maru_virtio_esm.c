@@ -49,7 +49,6 @@ MODULE_DESCRIPTION("Emulator Virtio EmulatorStatusMedium Driver");
 
 struct progress_info
 {
-	char mode;
 	uint16_t percentage;
 };
 
@@ -85,79 +84,61 @@ static void vq_esm_callback(struct virtqueue *vq)
 
 static int esm_open(struct inode *i, struct file *f)
 {
-	VESM_LOG(KERN_DEBUG, "ESM open\n");
+	VESM_LOG(KERN_DEBUG, "esm_open\n");
 	return 0;
 }
 
 static int esm_close(struct inode *i, struct file *f)
 {
-	VESM_LOG(KERN_DEBUG, "ESM close\n");
+	VESM_LOG(KERN_DEBUG, "esm_close\n");
 	return 0;
 }
 
 static ssize_t esm_read(struct file *f, char __user *buf, size_t len, loff_t *off)
 {
-	VESM_LOG(KERN_DEBUG, "ESM read\n");
+	VESM_LOG(KERN_DEBUG, "esm_read\n");
 	return 0;
 }
 
-#define BUF_SIZE 5
 static ssize_t esm_write(struct file *f, const char __user *ubuf, size_t len, loff_t *off)
 {
 	int err = 0;
 	ssize_t ret = 0;
-	char mode;
-	char buf[BUF_SIZE];
+	char buf[4];
 
 	if(vesm == NULL) {
 		VESM_LOG(KERN_ERR, "Device or driver is malfunction.\n");
-		return -EFAULT;
+		return 0;
 	}
 
-	len = min((size_t)BUF_SIZE, len);
+	len = min((size_t)4, len);
 
 	ret = copy_from_user(buf, ubuf, len);
 	if (ret) {
-		return -EFAULT;
+		ret = -EFAULT;
+		return ret;
 	}
+	buf[len - 1] = '\0';
 
-	if (buf[len - 1] == '\n') {
-		--len;
-	}
-	if (len < 2 || len > 4) {
-		VESM_LOG(KERN_ERR, "Input Length error.\n");
-		return -EFAULT;
-	}
-
-	buf[len] = '\0';
-
-	mode = buf[0];
-	if (mode != 's' && mode != 'S' && mode != 'u' && mode != 'U') {
-		VESM_LOG(KERN_ERR, "Can not detect class character [%c]\n", mode);
-		return -EFAULT;
-	}
-	vesm->progress.mode = mode;
-
-	ret = kstrtou16(&buf[1], 10, &vesm->progress.percentage);
+	ret = kstrtou16(buf, 10, &vesm->progress.percentage);
 	if (ret < 0) {
-		VESM_LOG(KERN_ERR, "Failed to convert string to integer. %s\n", &buf[1]);
+		VESM_LOG(KERN_ERR, "failed to convert string to integer.\n");
 		return ret;
 	}
 
-	VESM_LOG(KERN_DEBUG, "Boot up progress is [%u] percent done at [%s].\n",
-		vesm->progress.percentage, (mode == 's' || mode == 'S' ? "system mode" : "user mode"));
+	VESM_LOG(KERN_DEBUG, "boot up progress is [%u] percent done.\n", vesm->progress.percentage);
 
 	sg_init_one(vesm->sg, &vesm->progress, sizeof(vesm->progress));
 	err = virtqueue_add_buf (vesm->vq, vesm->sg, 1, 0, &vesm->progress, GFP_ATOMIC);
 	if (err < 0) {
 		VESM_LOG(KERN_ERR, "%d\n", err);
-		VESM_LOG(KERN_ERR, "Failed to add buffer to virtqueue.\n");
+		VESM_LOG(KERN_ERR, "failed to add buffer to virtqueue.\n");
 		return 0;
 	}
 
 	virtqueue_kick(vesm->vq);
 
-	VESM_LOG(KERN_DEBUG, "ESM write\n");
+	VESM_LOG(KERN_DEBUG, "esm_write\n");
 	return len;
 }
 

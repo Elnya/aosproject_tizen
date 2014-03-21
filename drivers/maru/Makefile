@@ -1,3 +1,4 @@
+obj-$(CONFIG_MARU_LCD) += maru_lcd.o
 obj-$(CONFIG_MARU_CODEC) += maru_codec.o
 obj-$(CONFIG_MARU_TOUCHSCREEN) += maru_usb_touchscreen.o
 obj-$(CONFIG_MARU_VIRTIO_TOUCHSCREEN) += maru_virtio_touchscreen.o
@@ -12,7 +13,4 @@ obj-$(CONFIG_MARU_USB_MASS_STORAGE) += maru_usb_mass_storage.o
 obj-$(CONFIG_MARU_USB_MODE) += maru_usb_mode.o
 obj-$(CONFIG_MARU_VIRTIO_KEYBOARD) += maru_virtio_keyboard.o
 obj-$(CONFIG_MARU_VIRTIO_ESM) += maru_virtio_esm.o
-obj-$(CONFIG_MARU_VIRTIO_EVDI) += maru_virtio_evdi.o
-obj-$(CONFIG_MARU_VIRTIO_SENSOR) += maru_virtio_sensor.o
-obj-$(CONFIG_MARU_VIRTIO_NFC) += maru_virtio_nfc.o
-obj-$(CONFIG_MARU_BRILLCODEC) += maru_brillcodec.o
+obj-$(CONFIG_MARU_BRILL_CODEC) += maru_brill_codec.o

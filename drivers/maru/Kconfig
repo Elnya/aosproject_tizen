@@ -2,6 +2,10 @@ menuconfig MARU
 	tristate "MARU virtual device drivers for emulator"
 	default n
 
+config MARU_LCD
+	tristate "MARU LCD driver"
+	depends on MARU != n
+
 config MARU_CODEC
 	tristate "MARU codec driver"
 	depends on MARU != n
@@ -64,18 +68,6 @@ config MARU_VIRTIO_ESM
 	tristate "MARU VirtIO Emulator Status Medium Driver"
 	depends on MARU != n
 
-config MARU_VIRTIO_EVDI
-	tristate "MARU VirtIO Emulator Virtual Device Interface Driver"
-	depends on MARU != n
-
-config MARU_VIRTIO_SENSOR
-	tristate "MARU VirtIO Virtual Sensor Device Driver"
-	depends on MARU != n
-
-config MARU_VIRTIO_NFC
-	tristate "MARU VirtIO Virtual NFC Device Driver"
-	depends on MARU != n
-
-config MARU_BRILLCODEC
+config MARU_BRILL_CODEC
 	tristate "MARU brillcodec driver"
 	depends on MARU != n

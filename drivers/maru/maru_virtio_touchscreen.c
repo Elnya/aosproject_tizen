@@ -1,7 +1,7 @@
 /*
  * Maru Virtio Touchscreen Device Driver
  *
- * Copyright (c) 2012 - 2013 Samsung Electronics Co., Ltd. All rights reserved.
+ * Copyright (c) 2011 Samsung Electronics Co., Ltd. All rights reserved.
  *
  * Contact: 
  *  GiWoong Kim <giwoong.kim@samsung.com>
@@ -200,27 +200,22 @@ static void vq_touchscreen_callback(struct virtqueue *vq)
 
         finger_id = event->z;
 
-        if (finger_id < MAX_TRKID) {
-            /* Multi-touch Protocol is B */
-
-            if (event->state != 0)
-            { /* pressed */
-                input_mt_slot(vt->idev, finger_id);
-                input_mt_report_slot_state(vt->idev, MT_TOOL_FINGER, true);
-                input_report_abs(vt->idev, ABS_MT_TOUCH_MAJOR, 10);
-                input_report_abs(vt->idev, ABS_MT_POSITION_X, event->x);
-                input_report_abs(vt->idev, ABS_MT_POSITION_Y, event->y);
-            }
-            else
-            { /* released */
-                input_mt_slot(vt->idev, finger_id);
-                input_mt_report_slot_state(vt->idev, MT_TOOL_FINGER, false);
-            }
-
-            input_sync(vt->idev);
-        } else {
-            printk(KERN_ERR "%d is an invalid finger id!\n", finger_id);
+        /* Multi-touch Protocol is B */
+        if (event->state != 0)
+        { /* pressed */
+            input_mt_slot(vt->idev, finger_id);
+            input_mt_report_slot_state(vt->idev, MT_TOOL_FINGER, true);
+            input_report_abs(vt->idev, ABS_MT_TOUCH_MAJOR, 10);
+            input_report_abs(vt->idev, ABS_MT_POSITION_X, event->x);
+            input_report_abs(vt->idev, ABS_MT_POSITION_Y, event->y);
         }
+        else
+        { /* released */
+            input_mt_slot(vt->idev, finger_id);
+            input_mt_report_slot_state(vt->idev, MT_TOOL_FINGER, false);
+        }
+
+        input_sync(vt->idev);
 
         /* expose buffer to other end */
         err = virtqueue_add_buf(vt->vq, sg, 0,
